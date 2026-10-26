@@ -281,6 +281,7 @@ export const styles = {
   "signup-form": css`
 &.signup-form {
   width: min(${theme.layout.form}, 100%);
+  margin-inline: auto;
 }
   `,
   "verification-section": css`
