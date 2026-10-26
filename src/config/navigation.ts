@@ -16,6 +16,7 @@ const pages: PageMetadata[] = [
   { path: '/', title: '홈', section: 'home' },
   { path: '/login', title: '로그인', section: 'auth', description: '학교 이메일로 학습 기록을 이어서 확인합니다.', activeSubmenu: '/login' },
   { path: '/signup', title: '회원가입', section: 'auth', description: '필수 정보를 입력하고 학교 이메일 인증을 진행합니다.', activeSubmenu: '/signup' },
+  { path: '/signup/teacher', title: '회원가입', section: 'auth', description: '필수 정보를 입력하고 학교 이메일 인증을 진행합니다.', activeSubmenu: '/signup' },
   { path: '/verify-email', title: '이메일 인증', section: 'auth', description: '받은 인증 코드를 입력해 학교 이메일을 확인합니다.', activeSubmenu: '/verify-email' },
   { path: '/reset-password', title: '비밀번호 재설정', section: 'auth', description: '현재 비밀번호를 확인한 뒤 새 비밀번호로 변경합니다.', activeSubmenu: '/reset-password' },
   { path: '/problems', title: '문제 목록', section: 'problems', activeSubmenu: '/problems' },
