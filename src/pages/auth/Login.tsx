@@ -1,34 +1,87 @@
-import { getStyles } from '../../styles/classes'
-import FormMessage from '../../components/ui/FormMessage'
+import { useRef, useState, type SubmitEvent } from 'react'
+import { Link, useNavigate } from 'react-router'
 import { Button } from '../../components/ui/Button'
 import { InputField } from '../../components/ui/InputField'
-import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { authApi } from '../../api/auth'
+import { getErrorMessage } from '../../api/client'
+import { saveSession } from '../../auth/session'
+import { setPendingSignup } from '../../auth/signupDraft'
+import {
+  LoginSection,
+  LoginContainer,
+  LoginPassword,
+  LoginSubmit,
+  LoginFeedback,
+  LoginLinks,
+} from './Login.styles'
 
 export default function Login() {
   const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const submitting = useRef(false)
+  const navigate = useNavigate()
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
-    setMessage('현재 로그인을 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.')
+    if (submitting.current) return
+    const values = new FormData(event.currentTarget)
+    const email = String(values.get('email') ?? '').trim()
+    const password = String(values.get('password') ?? '')
+    submitting.current = true
+    setIsSubmitting(true)
+    setMessage('')
+    try {
+      const tokens = await authApi.login({ email, password })
+      saveSession(tokens, email)
+      setPendingSignup(null)
+      navigate('/', { replace: true })
+    } catch (error) {
+      setMessage(getErrorMessage(error))
+    } finally {
+      submitting.current = false
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    <section className="wide-container login-section" css={getStyles("wide-container login-section")} aria-label="로그인 정보 입력">
-      <div className="login-container" css={getStyles("login-container")}>
-        <form onSubmit={handleSubmit} onChange={() => setMessage('')}>
-          <InputField id="login-email" name="email" type="email" autoComplete="username" placeholder="name@school.ac.kr" required label="학교 이메일" />
-          <InputField id="login-password" name="password" type="password" autoComplete="current-password" required label="비밀번호" className="login-password" css={getStyles("login-password")} />
-          <div className="login-submit" css={getStyles("login-submit")}>
-            <Button variant="primary" type="submit">로그인</Button>
-          </div>
-          {message && <FormMessage message={message} className="form-message" css={getStyles("form-message")} />}
+    <LoginSection aria-label="로그인 정보 입력">
+      <LoginContainer>
+        <form
+          onSubmit={handleSubmit}
+          onChange={() => setMessage('')}
+          aria-busy={isSubmitting}
+        >
+          <InputField
+            id="login-email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            placeholder="name@dsm.hs.kr"
+            required
+            readOnly={isSubmitting}
+            label="학교 이메일"
+          />
+          <LoginPassword
+            id="login-password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            readOnly={isSubmitting}
+            label="비밀번호"
+          />
+          <LoginSubmit>
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? '로그인 중…' : '로그인'}
+            </Button>
+          </LoginSubmit>
+          {message && <LoginFeedback message={message} />}
         </form>
-        <nav className="login-links" css={getStyles("login-links")} aria-label="계정 도움말">
+        <LoginLinks aria-label="계정 도움말">
           <Link to="/signup">회원가입</Link>
           <Link to="/reset-password">비밀번호 재설정</Link>
-        </nav>
-      </div>
-    </section>
+        </LoginLinks>
+      </LoginContainer>
+    </LoginSection>
   )
 }

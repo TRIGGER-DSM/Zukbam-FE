@@ -1,8 +1,17 @@
-import { getStyles } from '../../styles/classes'
-import { useState, type CSSProperties } from 'react'
-import { growthActivity } from '../../data/growthActivity'
+import { useState } from 'react'
+import { useActivity } from '../../api/queries'
+import QueryStatus from '../../components/ui/QueryStatus'
 import PageIntro from '../../components/layout/PageIntro'
-import StatsGrid from '../../components/ui/StatsGrid'
+import {
+  GrowthContent,
+  GrowthStats,
+  GrowthActivityHeading,
+  GrowthPeriod,
+  GrowthDescription,
+  GrowthChartScroll,
+  GrowthChart,
+  GrowthCell,
+} from './Growth.styles'
 
 const palettes = {
   'Neon Lime': ['#37383c', '#caffc0', '#9bff87', '#2ee611'],
@@ -12,24 +21,67 @@ const palettes = {
 
 export default function Growth() {
   const [palette, setPalette] = useState<keyof typeof palettes>('Neon Lime')
+  const activity = useActivity()
   const colors = palettes[palette]
+  if (!activity.loggedIn) return <p role="status">로그인 후 이용해 주세요.</p>
+  if (!activity.streak.data || !activity.grass.data) return <QueryStatus pending={activity.streak.isPending || activity.grass.isPending} error={activity.streak.error ?? activity.grass.error} retry={() => { void activity.streak.refetch(); void activity.grass.refetch() }} />
   return (
     <>
-      <PageIntro className="growth-intro" css={getStyles("growth-intro")} id="growth-title" eyebrow="성장 기록" title="꾸준함을 한 화면에서 확인하기" description="최근 365일 풀이 활동과 현재·최장 스트릭만 집중해서 보여줍니다." />
-      <section className="wide-container growth-content" css={getStyles("wide-container growth-content")} aria-label="성장 통계와 풀이 활동">
-        <StatsGrid className="growth-stats" css={getStyles("growth-stats")} items={[{ value: '12일', label: '현재 스트릭' }, { value: '31일', label: '최장 스트릭' }, { value: '187일', label: '활동한 날' }, { value: '426문제', label: '총 정답' }]} />
-        <div className="growth-activity-heading" css={getStyles("growth-activity-heading")}>
-          <div><p className="growth-period" css={getStyles("growth-period")}>최근 365일</p><h2 id="growth-activity-title">풀이 활동</h2><p className="growth-description" css={getStyles("growth-description")}>색이 진할수록 해당 날짜에 더 많은 문제를 풀었습니다.</p></div>
-          <select aria-label="풀이 활동 색상" value={palette} onChange={event => setPalette(event.target.value as keyof typeof palettes)}>
-            {Object.keys(palettes).map(name => <option key={name}>{name}</option>)}
-          </select>
-        </div>
-        <div className="growth-chart-scroll" css={getStyles("growth-chart-scroll")} role="region" aria-labelledby="growth-activity-title" tabIndex={0}>
-          <div className="growth-chart" css={getStyles("growth-chart")} role="img" aria-label="최근 365일 중 187일 활동, 총 426문제 정답">
-            {growthActivity.map((level, index) => <span key={index} className="growth-cell" css={getStyles("growth-cell")} style={{ '--activity-color': colors[level] } as CSSProperties} aria-hidden="true" />)}
+      <PageIntro
+        id="growth-title"
+        eyebrow="성장 기록"
+        title="꾸준함을 한 화면에서 확인하기"
+        description="최근 365일 풀이 활동과 현재·최장 스트릭만 집중해서 보여줍니다."
+      />
+      <GrowthContent aria-label="성장 통계와 풀이 활동">
+        <GrowthStats
+          items={[
+            { value: `${activity.streak.data.currentStreak}일`, label: '현재 스트릭' },
+            { value: `${activity.streak.data.maxStreak}일`, label: '최장 스트릭' },
+            { value: `${activity.activeDays}일`, label: '활동한 날' },
+            { value: `${activity.total}문제`, label: '기간 내 정답' },
+          ]}
+        />
+        <GrowthActivityHeading>
+          <div>
+            <GrowthPeriod>최근 365일</GrowthPeriod>
+            <h2 id="growth-activity-title">풀이 활동</h2>
+            <GrowthDescription>
+              색이 진할수록 해당 날짜에 더 많은 문제를 풀었습니다.
+            </GrowthDescription>
           </div>
-        </div>
-      </section>
+          <select
+            aria-label="풀이 활동 색상"
+            value={palette}
+            onChange={(event) =>
+              setPalette(event.target.value as keyof typeof palettes)
+            }
+          >
+            {Object.keys(palettes).map((name) => (
+              <option key={name}>{name}</option>
+            ))}
+          </select>
+        </GrowthActivityHeading>
+        <GrowthChartScroll
+          role="region"
+          aria-labelledby="growth-activity-title"
+          tabIndex={0}
+        >
+          <GrowthChart
+            role="img"
+            aria-label={`최근 365일 중 ${activity.activeDays}일 활동, 총 ${activity.total}문제 정답`}
+          >
+            {activity.days.map((day, index) => (
+              <GrowthCell
+                key={index}
+                aria-hidden="true"
+                $color={colors[Math.min(day.count, 3)]}
+                title={`${day.date}: ${day.count}문제`}
+              />
+            ))}
+          </GrowthChart>
+        </GrowthChartScroll>
+      </GrowthContent>
     </>
   )
 }
