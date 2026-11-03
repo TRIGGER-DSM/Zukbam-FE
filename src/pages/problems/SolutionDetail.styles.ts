@@ -1,198 +1,178 @@
-import { css } from '@emotion/react'
 import { theme } from '../../styles/theme'
+import { WideContainer } from '../../components/layout/Container.styles'
+import styled from '@emotion/styled'
+import StatsGrid from '../../components/ui/StatsGrid'
+import CodeBlock from '../../components/ui/CodeBlock'
 
-export const styles = {
-  "solution-intro": css`
-&.solution-intro {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  padding-block: 48px 28px;
-}
-&.solution-intro h1 {
-  padding-top: 10px;
-  font-size: 36px;
-  line-height: 48px;
-  font-weight: 900;
-}
-@media (max-width: ${theme.breakpoints.mobile}) {
-&.solution-intro {
-  flex-direction: column;
-  align-items: flex-start;
-  padding-block: 36px 20px;
-}
-}
-@media (max-width: ${theme.breakpoints.mobile}) {
-&.solution-intro h1 {
-  font-size: 29px;
-  line-height: 40px;
-}
-}
-  `,
-  "solution-eyebrow": css`
-&.solution-eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: ${theme.colors.accent};
-  font-size: 13px;
-  line-height: 26px;
-}
-&.solution-eyebrow img {
-  width: 16px;
-  height: 16px;
-}
-  `,
-  "solution-description": css`
-&.solution-description {
-  padding-top: 8px;
-  color: ${theme.colors.secondary};
-  font-size: 16px;
-  line-height: 26px;
-}
-@media (max-width: ${theme.breakpoints.mobile}) {
-&.solution-description {
-  font-size: 14px;
-  line-height: 24px;
-}
-}
-  `,
-  "solution-content": css`
-&.solution-content {
-  display: grid;
-  grid-template-columns: minmax(0, 772fr) minmax(0, 300fr);
-  gap: 48px;
-  align-items: start;
-  padding-block: 72px;
-}
-@media (max-width: ${theme.breakpoints.tablet}) {
-&.solution-content {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 40px;
-}
-}
-@media (max-width: ${theme.breakpoints.mobile}) {
-&.solution-content {
-  padding-block: 40px 48px;
-}
-}
-  `,
-  "solution-article": css`
-&.solution-article {
-  min-width: 0;
-}
-  `,
-  "solution-metrics": css`
-&.solution-metrics {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0;
-  border-block: .8px solid ${theme.colors.border};
-}
-&.solution-metrics > div {
-  display: flex;
-  flex-direction: column;
-  padding: 18px;
-  min-height: 93px;
-  border-right: .8px solid ${theme.colors.border};
-}
-&.solution-metrics > div:last-child {
-  border-right: 0;
-}
-&.solution-metrics dt {
-  order: 2;
-  padding-top: 3px;
-  color: ${theme.colors.muted};
-  font-size: 12px;
-  line-height: 26px;
-}
-&.solution-metrics dd {
-  order: 1;
-  margin: 0;
-  font-size: 16px;
-  line-height: 26px;
-  font-weight: 700;
-}
-@media (max-width: ${theme.breakpoints.mobile}) {
-&.solution-metrics > div {
-  padding: 14px 10px;
-  min-height: 85px;
-}
-}
-  `,
-  "solution-code": css`
-&.solution-code {
-  margin: 24px 0 0;
-  min-height: 172px;
-  padding: 18px;
-  border: .8px solid ${theme.colors.border};
-  border-radius: 8px;
-  background: ${theme.colors.dark};
-  color: ${theme.colors.text};
-  font-family: 'Cascadia Code', Consolas, monospace;
-  font-size: 14px;
-  line-height: 22.4px;
-  overflow-x: auto;
-  tab-size: 4;
-}
-&.solution-code code {
-  font: inherit;
-}
-  `,
-  "solution-sidebar": css`
-&.solution-sidebar {
-  padding-left: 28px;
-  border-left: .8px solid ${theme.colors.border};
-  min-width: 0;
-}
-&.solution-sidebar h2 {
-  margin: 0;
-  font-size: 16px;
-  line-height: 26px;
-  font-weight: 700;
-}
-&.solution-sidebar p {
-  padding-top: 6px;
-  color: ${theme.colors.secondary};
-  font-size: 16px;
-  line-height: 26px;
-}
-&.solution-sidebar section + section {
-  margin-top: 32px;
-  padding-top: 32px;
-  border-top: .8px solid ${theme.colors.border};
-}
-@media (max-width: ${theme.breakpoints.tablet}) {
-&.solution-sidebar {
-  padding: 32px 0 0;
-  border-left: 0;
-  border-top: .8px solid ${theme.colors.border};
-}
-}
-  `,
-  "solution-problem-link": css`
-&.solution-problem-link {
-  margin-top: 32px;
-  padding-top: 32px;
-  border-top: .8px solid ${theme.colors.border};
-}
-&.solution-problem-link a {
-  color: ${theme.colors.accent};
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  font-size: 16px;
-  line-height: 26px;
-  font-weight: 800;
-}
-  `,
-  "solution-unavailable": css`
-&.solution-unavailable {
-  margin-top: 24px;
-  padding: 18px;
-  color: ${theme.colors.secondary};
-  font-size: 14px;
-  line-height: 24px;
-}
-  `,
-}
+export const SolutionContent = styled(WideContainer)({
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 772fr) minmax(0, 300fr)',
+  gap: '48px',
+  alignItems: 'start',
+  paddingBlock: '72px',
+  [`@media (max-width: ${theme.breakpoints.tablet})`]: {
+    gridTemplateColumns: 'minmax(0, 1fr)',
+    gap: '40px',
+  },
+  [`@media (max-width: ${theme.breakpoints.mobile})`]: {
+    paddingBlock: '40px 48px',
+  },
+})
+
+export const SolutionArticle = styled.article({
+  minWidth: 0,
+})
+
+export const SolutionMetrics = styled(StatsGrid)({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+  margin: 0,
+  borderBlock: `.8px solid ${theme.colors.border}`,
+  '& > div': {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '18px',
+    minHeight: '93px',
+    borderRight: `.8px solid ${theme.colors.border}`,
+  },
+  '& > div:last-child': {
+    borderRight: 0,
+  },
+  '& dt': {
+    order: 2,
+    paddingTop: '3px',
+    color: theme.colors.muted,
+    fontSize: '12px',
+    lineHeight: '26px',
+  },
+  '& dd': {
+    order: 1,
+    margin: 0,
+    fontSize: '16px',
+    lineHeight: '26px',
+    fontWeight: 700,
+  },
+  [`@media (max-width: ${theme.breakpoints.mobile})`]: {
+    '& > div': {
+      padding: '14px 10px',
+      minHeight: '85px',
+    },
+  },
+})
+
+export const SolutionCode = styled(CodeBlock)({
+  margin: '24px 0 0',
+  minHeight: '172px',
+  padding: '18px',
+  border: `.8px solid ${theme.colors.border}`,
+  borderRadius: '8px',
+  background: theme.colors.dark,
+  color: theme.colors.text,
+  fontFamily: "'Cascadia Code', Consolas, monospace",
+  fontSize: '14px',
+  lineHeight: '22.4px',
+  overflowX: 'auto',
+  tabSize: 4,
+  '& code': {
+    font: 'inherit',
+  },
+})
+
+export const SolutionUnavailable = styled.p({
+  marginTop: '24px',
+  padding: '18px',
+  color: theme.colors.secondary,
+  fontSize: '14px',
+  lineHeight: '24px',
+})
+
+export const SolutionSidebar = styled.aside({
+  paddingLeft: '28px',
+  borderLeft: `.8px solid ${theme.colors.border}`,
+  minWidth: 0,
+  '& h2': {
+    margin: 0,
+    fontSize: '16px',
+    lineHeight: '26px',
+    fontWeight: 700,
+  },
+  '& p': {
+    paddingTop: '6px',
+    color: theme.colors.secondary,
+    fontSize: '16px',
+    lineHeight: '26px',
+  },
+  '& section + section': {
+    marginTop: '32px',
+    paddingTop: '32px',
+    borderTop: `.8px solid ${theme.colors.border}`,
+  },
+  [`@media (max-width: ${theme.breakpoints.tablet})`]: {
+    padding: '32px 0 0',
+    borderLeft: 0,
+    borderTop: `.8px solid ${theme.colors.border}`,
+  },
+})
+
+export const SolutionProblemLink = styled.div({
+  marginTop: '32px',
+  paddingTop: '32px',
+  borderTop: `.8px solid ${theme.colors.border}`,
+  '& a': {
+    color: theme.colors.accent,
+    textDecoration: 'underline',
+    textUnderlineOffset: '2px',
+    fontSize: '16px',
+    lineHeight: '26px',
+    fontWeight: 800,
+  },
+})
+
+export const SolutionDetailHeading = styled(
+  WideContainer.withComponent('section'),
+)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-end',
+  gap: '24px',
+  paddingBlock: '48px 28px',
+  '& h1': {
+    paddingTop: '10px',
+    fontSize: '36px',
+    lineHeight: '48px',
+    fontWeight: 900,
+  },
+  [`@media (max-width: ${theme.breakpoints.mobile})`]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    paddingBlock: '36px 20px',
+    '& h1': {
+      fontSize: '29px',
+      lineHeight: '40px',
+    },
+  },
+})
+
+export const SolutionDetailEyebrow = styled.p({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  color: theme.colors.accent,
+  fontSize: '13px',
+  lineHeight: '26px',
+  '& img': {
+    width: '16px',
+    height: '16px',
+  },
+})
+
+export const SolutionDetailHeadingDescription = styled.p({
+  paddingTop: '8px',
+  color: theme.colors.secondary,
+  fontSize: '16px',
+  lineHeight: '26px',
+  [`@media (max-width: ${theme.breakpoints.mobile})`]: {
+    fontSize: '14px',
+    lineHeight: '24px',
+  },
+})

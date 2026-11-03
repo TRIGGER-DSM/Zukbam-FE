@@ -1,62 +1,46 @@
 # Zubam / Algo
 
-Figma 디자인을 구현한 React + TypeScript + Vite 프로젝트입니다.
+React + TypeScript + Vite + Emotion 프런트엔드입니다.
 
-## 실행
+## 실행 및 검사
 
 ```sh
-pnpm dev
-pnpm build
-pnpm lint
+npm run dev
+npm run build
+npm run lint
+npm run test:auth
 ```
 
-## 폴더 구성
+## API 설정
 
-```text
-src/
-  App.tsx                  # 페이지 라우트 구성
-  main.tsx                 # React 및 BrowserRouter 진입점
-  pages/
-    auth/                  # 로그인, 회원가입, 인증, 비밀번호 재설정
-    home/                  # 메인 페이지
-    problems/              # 문제 목록·상세, 제출, 기록·풀이 상세
-    social/                # 성장, 계정 관리
-  components/
-    layout/                # 헤더, 푸터, 하위 메뉴, 공통 페이지 제목
-    ui/                    # 버튼, 입력 필드, 상태 안내, 통계, 코드, 페이지 이동
-    home/                  # 추천, 풀이 활동, 랭크, 공지 섹션
-    problems/              # 최근 문제 활동
-    account/               # 기본 정보 수정, 로그아웃 섹션
-  routes/                  # URL 파라미터를 페이지 props로 변환
-  config/                  # 메뉴, 페이지 제목, 활성 메뉴 설정
-  data/                    # Figma 샘플 데이터
-  styles/                  # 공통 레이아웃·UI 스타일
+`.env.example`을 `.env.local`로 복사해 서버 주소를 설정한 뒤 개발 서버를 재시작합니다. 현재 `.env`에도 다음 서버 주소가 설정되어 있습니다.
+
+```dotenv
+VITE_API_BASE_URL=https://cowtree28-server.duckdns.org
 ```
 
-페이지별 Emotion 스타일은 해당 `pages` 폴더의 `*.styles.ts`에 함께 있습니다. 화면에서 여러 번 쓰는 UI는 `components/ui`, 모든 페이지의 틀은 `components/layout`에 추가합니다. 특정 기능에만 쓰는 섹션은 `components/home`처럼 기능별 폴더에 둡니다.
+서버 주소는 공통 호스트까지만 설정합니다. 인증 API의 `/auth` 접두사는 코드에서 추가합니다. API 서버에서 프런트엔드 출처에 대한 CORS 허용이 필요합니다.
 
-## 스타일
+## 연동 범위
 
-- `styles/GlobalStyles.tsx`: Emotion `Global`로 전역 초기화와 기본 글꼴을 적용합니다.
-- `styles/theme.ts`: 공통 색상, 컨테이너 너비, 반응형 분기점입니다.
-- `styles/shared.styles.ts`: 공통 레이아웃·폼·버튼 스타일입니다.
-- `pages/**/페이지.styles.ts`: Emotion `css`로 정의한 페이지 스타일입니다.
-- `styles/classes.ts`: 기존 클래스 조합을 해당 Emotion 스타일로 연결하고 결과를 캐시합니다. 클래스 이름은 중첩 선택자와 화면 검증을 위한 식별자로 유지합니다.
+회원가입·이메일 인증·로그인, 사용자/관리자 문제 목록·상세, 관리자 문제 삭제, 내 프로필, 홈·성장 기록의 스트릭/잔디, 그룹 조회·생성·수정·삭제, 그룹 멤버의 프로필/스트릭/잔디를 연결했습니다.
 
-스타일은 `css={getStyles('클래스 이름')}`으로 컴포넌트에 적용됩니다. 새 스타일 모듈을 만들면 `styles/classes.ts`에 등록하거나 해당 모듈의 `css` 값을 직접 사용합니다. `.css` 파일과 전역 클래스 스타일 주입은 사용하지 않습니다. 공통 토큰은 `theme`에서 가져오며, 기본 폰트 스타일시트는 `index.html`에서 불러옵니다.
+사용자 요청에 따라 필요한 UI가 없는 API는 연결하지 않았습니다. 친구·그룹 초대·그룹장 위임·멤버 내보내기/탈퇴, 서버 명세와 폼이 맞지 않는 문제 등록/수정은 제외했습니다. 자세한 경로와 제외 사유는 [API 연동 현황](docs/api-integration.md)을 확인하세요.
 
-## 공통 컴포넌트
+## 인증과 데이터
 
-- `Button` / `ButtonLink`: 실제 버튼과 페이지 이동 링크를 구분하고 색상 변형을 공유합니다.
-- `InputField`: 라벨, 입력 속성, 도움말 연결을 유지합니다. `className`은 필드 컨테이너에 적용됩니다.
-- `PageIntro`: 어두운 배경의 큰 소개 영역입니다.
-- `PageHeading`: 문제·기록 페이지의 제목과 우측 액션 영역입니다.
-- `SubNavigation`: 설정된 메뉴와 활성 경로를 표시합니다.
-- `FormMessage`, `StatsGrid`, `CodeBlock`, `Pagination`, `AssetIcon`: 반복되는 상태·통계·코드·페이지 이동·아이콘 UI입니다.
+가입 입력값과 인증 진행 정보는 메모리에만 유지합니다. 가입 전 새로고침하면 다시 입력해야 합니다. 인증 결과와 로그인 이메일은 현재 탭의 sessionStorage에 저장하며 로그아웃 시 삭제합니다.
 
-## 데이터와 동작
+보호된 API는 accessToken을 Authorization Bearer 헤더로 전달합니다. 로그아웃/계정 변경 시 조회 캐시를 지웁니다. 토큰 갱신·프로필 수정·서버 로그아웃 API는 Swagger에 없어 호출하지 않습니다.
 
-화면은 샘플 데이터로 표시됩니다. 검색, 필터, 입력 검증, 언어·색상 선택, 페이지 이동은 프런트엔드에서 동작합니다. 인증, 개인정보 저장, 실제 로그아웃, 제출·채점은 서버 API가 연결되지 않았습니다. `Pagination`은 샘플의 첫 페이지를 표시하며, 추가 페이지는 비활성화되어 있습니다.
+문제 검색/난이도 필터는 현재 서버 페이지에 적용됩니다. 제공되지 않는 카테고리·정답률 등은 연결한 화면에서 표시하지 않습니다. 관리자 대시보드·랭킹·학습 기록 등 미연동 화면은 기존 샘플 데이터입니다.
 
-기존 동작과 같이 아직 구현하지 않은 URL은 회원가입 화면으로 표시됩니다. 새 페이지를 추가할 때는 `App.tsx`의 라우트와 `config/navigation.ts`의 제목·메뉴 설정을 함께 추가합니다.
-"# Zukbam-FE" 
+## 주요 파일
+
+- `src/api/client.ts`: 공통 JSON 요청, 시간 초과, HTTP/네트워크 오류
+- `src/api/auth.ts`: 인증 API
+- `src/api/service.ts`: 문제·프로필·스트릭·그룹 API
+- `src/api/queries.ts`: 프로필 및 날짜 범위별 활동 조회
+- `src/auth/`: 세션 및 회원가입 임시 정보
+- `docs/openapi.json`: 제공된 Swagger 명세 스냅샷
+- `tests/auth.test.mjs`: 서버를 변경하지 않는 인증·공통 API 계약 테스트
